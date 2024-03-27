@@ -1,4 +1,5 @@
 import { ToggleSwitch } from "flowbite-react";
+import { OrderAccions } from "../reducers/order-reducer";
 const tipOptions = [
   {
     id: "tip-10",
@@ -18,11 +19,11 @@ const tipOptions = [
 ];
 type TipPercentageFormProps = {
   tip: number;
-  handleSwitchAddTip: (value: number) => void;
+  dispatch: React.Dispatch<OrderAccions>;
 };
 export const TipPercentageForm = ({
   tip,
-  handleSwitchAddTip,
+  dispatch,
 }: TipPercentageFormProps) => {
   return (
     <div>
@@ -34,7 +35,12 @@ export const TipPercentageForm = ({
             className="m-2"
             checked={tipOption.value === tip}
             label={tipOption.label}
-            onChange={() => handleSwitchAddTip(tipOption.value)}
+            onChange={() =>
+              dispatch({
+                type: "handle-switch-add-tip",
+                payload: { value: tipOption.value },
+              })
+            }
           />
         ))}
       </form>

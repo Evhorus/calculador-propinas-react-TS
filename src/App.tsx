@@ -1,16 +1,19 @@
-import { useState } from "react";
-import { menuItems } from "./data/db";
+import { useEffect, useReducer } from "react";
 import { MenuItem } from "./components/MenuItem";
-import { useOrder } from "./hooks/useOrder";
 import { OrderContents } from "./components/OrderContents";
 import { OrderTotals } from "./components/OrderTotals";
 import { TipPercentageForm } from "./components/TipPercentageForm";
+import { initialState, orderReducer } from "./reducers/order-reducer";
 
 function App() {
-  const [data] = useState(menuItems);
+  const [state, dispatch] = useReducer(orderReducer, initialState);
 
-  const { order, tip, addItem, handleSwitchAddTip, removeItem, placeOrder } =
-    useOrder();
+  useEffect(() => {
+    if (state.order.length === 0) {
+      state.tip = 0;
+    }
+  }, [state]);
+
   return (
     <>
       <header className="bg-cyan-400 py-5">
@@ -22,24 +25,25 @@ function App() {
         <div className="p-5">
           <h2 className="text-4xl font-black">Menú</h2>
           <div className="space-y-3 mt-10">
-            {data.map((item) => (
-              <MenuItem key={item.id} item={item} addItem={addItem} />
+            {state.data.map((item) => (
+              <MenuItem key={item.id} item={item} dispatch={dispatch} />
             ))}
           </div>
         </div>
         <div className="border border-dashed border-slate-300 p-5 rounded-lg space-y-1">
-          {order.length === 0 ? (
+          {state.order.length === 0 ? (
             <p className="text-center font-black text-4xl">
               La orden esta vacia
             </p>
           ) : (
             <>
-              <OrderContents order={order} removeItem={removeItem} />
-              <TipPercentageForm
-                tip={tip}
-                handleSwitchAddTip={handleSwitchAddTip}
+              <OrderContents order={state.order} dispatch={dispatch} />
+              <TipPercentageForm tip={state.tip} dispatch={dispatch} />
+              <OrderTotals
+                order={state.order}
+                tip={state.tip}
+                dispatch={dispatch}
               />
-              <OrderTotals order={order} tip={tip} placeOrder={placeOrder} />
             </>
           )}
         </div>
